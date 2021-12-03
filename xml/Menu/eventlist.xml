@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/eventlist</path>
+    <page_callback>CRM_Eventlist_Form_EventList</page_callback>
+    <title>EventList</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
