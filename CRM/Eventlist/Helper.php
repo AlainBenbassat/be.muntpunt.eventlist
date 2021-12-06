@@ -4,6 +4,11 @@ class CRM_Eventlist_Helper {
 
   public static function getEvents($filters, $offset, $rowCount) {
     $eventTypeOptionGroupId = 15;
+    [$whereClause, $sqlParams] = self::convertToWhereClause($filters);
+
+    if ($whereClause) {
+      $where = " where $whereClause ";
+    }
 
     $sql = "
       select
@@ -32,23 +37,103 @@ class CRM_Eventlist_Helper {
         civicrm_loc_block lb on e.loc_block_id = lb.id
       left outer join
         civicrm_address a on a.id = lb.address_id
+      $where
       order by
         start_date desc
       limit
         $offset, $rowCount
     ";
-    $dao = CRM_Core_DAO::executeQuery($sql);
+    $dao = CRM_Core_DAO::executeQuery($sql, $sqlParams);
     $rows = $dao->fetchAll();
     return $rows;
   }
 
-  public function getNumberOfEvents($filters) {
+  public static function getNumberOfEvents($filters) {
+    [$whereClause, $sqlParams] = self::convertToWhereClause($filters);
+
     $sql = "
       select
         count(*)
       from
-        civicrm_event
+        civicrm_event e
     ";
-    return CRM_Core_DAO::singleValueQuery($sql);
+
+    if ($whereClause) {
+      $sql .= " where $whereClause ";
+    }
+
+    return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
+  }
+
+  public static function convertToWhereClause($values) {
+    $sqlWhere = '';
+    $sqlParams = [];
+    $filters = [];
+
+    if (!empty($values['event_title_contains'])) {
+      $filters['event_title_contains'] = ['e.title', 'like', '%' . $values['event_title_contains'] . '%', 'String'];
+    }
+
+    if (!empty($values['event_type_id'])) {
+      $filters['event_type_id'] = ['e.event_type_id', 'in', implode(',', $values['event_type_id']), 'CommaSeparatedIntegers'];
+    }
+
+    if (!empty($values['loc_block_id'])) {
+      $filters['loc_block_id'] = ['e.loc_block_id', '=', $values['loc_block_id'], 'Integer'];
+    }
+
+    if (!empty($values['event_start_date_from'])) {
+      $filters['event_start_date_from'] = ['e.start_date', '>=', $values['event_start_date_from'] . ' 00:00', 'String'];
+    }
+
+    if (!empty($values['event_start_date_to'])) {
+      $filters['event_start_date_to'] = ['e.start_date', '<=', $values['event_start_date_to'] . ' 23:59', 'String'];
+    }
+
+    $i = 1;
+    foreach ($filters as $filter) {
+      if (strlen($sqlWhere) > 0) {
+        $sqlWhere .= ' and ';
+      }
+
+      if ($filter[3] == 'CommaSeparatedIntegers') {
+        $sqlWhere .= $filter[0] . ' ' . $filter[1] . "(%$i)";
+      }
+      else {
+        $sqlWhere .= $filter[0] . ' ' . $filter[1] . ' %' . $i;
+      }
+
+      $sqlParams[$i] = [$filter[2], $filter[3]];
+
+      $i++;
+    }
+
+    return [$sqlWhere, $sqlParams];
+  }
+
+  public static function getLocBlocList() {
+    $locBlocks = [
+      '' => ' - Elke -'
+    ];
+
+    $sql = "
+      select
+        lb.id,
+        a.name,
+        a.street_address
+      from
+        civicrm_loc_block lb
+      inner join
+        civicrm_address a on lb.address_id = a.id
+      order by
+        a.name
+    ";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+
+    while ($dao->fetch()) {
+      $locBlocks[$dao->id] = $dao->street_address ? $dao->name . ' (' . $dao->street_address . ')' : $dao->name;
+    }
+
+    return $locBlocks;
   }
 }

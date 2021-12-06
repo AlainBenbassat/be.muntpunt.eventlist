@@ -1,21 +1,38 @@
+<table class="form-layout">
+  <tr>
+    <td>
+        {$form.event_status.label}<br>
+        {$form.event_status.html}
+    </td>
+    <td>
+        {$form.event_title_contains.label}<br>
+        {$form.event_title_contains.html}
+    </td>
+    <td>
+      {$form.event_type_id.label}<br>
+      {$form.event_type_id.html}
+    </td>
+    <td>
+        {$form.loc_block_id.label}<br>
+        {$form.loc_block_id.html}
+    </td>
+    <td>
+        {$form.event_mp_rooms.label}<br>
+        {$form.event_mp_rooms.html}
+    </td>
+  </tr>
 
+  <tr>
+    <td colspan="5">
+      {$form.event_start_date_from.label}<br>
+      van {$form.event_start_date_from.html} tot en met {$form.event_start_date_to.html}
+    </td>
+  </tr>
 
-{* FIELD EXAMPLE: OPTION 1 (AUTOMATIC LAYOUT) *}
-
-{foreach from=$elementNames item=elementName}
-  <div class="crm-section">
-    <div class="label">{$form.$elementName.label}</div>
-    <div class="content">{$form.$elementName.html}</div>
-    <div class="clear"></div>
-  </div>
-{/foreach}
-
-{* FOOTER *}
-<div class="crm-submit-buttons">
-{include file="CRM/common/formButtons.tpl" location="bottom"}
-</div>
-
-<hr>
+  <tr>
+    <td colspan="5">{include file="CRM/common/formButtons.tpl"} <a href="?reset=1">filters wissen</a></td>
+  </tr>
+</table>
 
 {if $rows}
   <div id="muntpunt_event_list">

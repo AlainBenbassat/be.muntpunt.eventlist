@@ -19,13 +19,17 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
     parent::buildQuickForm();
   }
 
+  public function getDefaultEntity() {
+    return 'Event';
+  }
+
   public function postProcess() {
     parent::postProcess();
   }
 
   public function pager($filters) {
-    $params['status'] = ts('Contribution %%StatusMessage%%');
-    $params['csvString'] = NULL;
+    $params['status'] = ts('Events %%StatusMessage%%');
+    $params['csvString'] = '';
     $params['buttonTop'] = 'PagerTopButton';
     $params['buttonBottom'] = 'PagerBottomButton';
     $params['rowCount'] = $this->get(CRM_Utils_Pager::PAGE_ROWCOUNT);
@@ -40,7 +44,20 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
   }
 
   private function addFormFields() {
-    $this->add('text', 'test_field', 'Test field');
+    $this->addSelect('event_type_id', ['multiple' => TRUE, 'context' => 'search']);
+
+    $locationEvents = CRM_Eventlist_Helper::getLocBlocList();
+    $this->add('select', 'loc_block_id', 'Locatie', $locationEvents, FALSE, ['class' => 'crm-select2']);
+
+    $mpRooms = [1 => 'Ketje', 2 => 'Ketje2'];
+    $this->add('select', 'event_mp_rooms', 'Muntpunt zalen', $mpRooms, FALSE, ['multiple' => TRUE, 'class' => 'crm-select2']);
+
+    $this->add('select', 'event_status', 'Status', [], FALSE, ['class' => 'crm-select2']);
+
+    $this->add('text', 'event_title_contains', 'Titel bevat');
+
+    $this->add('datepicker', 'event_start_date_from', 'Periode', [],FALSE, ['time' => FALSE, 'date' => 'yy-mm-dd', 'minDate' => '2000-01-01']);
+    $this->add('datepicker', 'event_start_date_to', 'Periode tot', [],FALSE, ['time' => FALSE, 'date' => 'yy-mm-dd', 'minDate' => '2000-01-01']);
   }
 
   private function addFormButtons() {
@@ -55,12 +72,7 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
 
   private function getFilters() {
     $values = $this->exportValues();
-    if (empty($values['test_field'])) {
-      return 1;
-    }
-    else {
-      return $values['test_field'];
-    }
+    return $values;
   }
 
   private function getRenderableElementNames() {
