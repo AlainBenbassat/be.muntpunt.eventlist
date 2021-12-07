@@ -10,6 +10,9 @@ class CRM_Eventlist_Helper {
       $where = " where $whereClause ";
     }
 
+    $countParticipantPositive = self::getcountParticipantQuery(1);
+    $countParticipantNegative = self::getcountParticipantQuery(0);
+
     $sql = "
       select
         e.id,
@@ -23,8 +26,8 @@ class CRM_Eventlist_Helper {
         'XXX' aanspreekpersoon,
         'XXX' organisator,
         'XXX' verwacht,
-        (select count(*) from civicrm_participant p1 inner join civicrm_contact c1 on p1.contact_id = c1.id where c1.is_deleted = 0 and p1.event_id = e.id and p1.status_id in (1,2)) geregistreerd,
-        (select count(*) from civicrm_participant p2 inner join civicrm_contact c2 on p2.contact_id = c2.id where c2.is_deleted = 0 and p2.event_id = e.id and p2.status_id not in (1,2)) geannuleerd,
+        ($countParticipantPositive) geregistreerd,
+        ($countParticipantNegative) geannuleerd,
         'XXX' effectief,
         'XXX' maxnum,
         'XXX' beschikbaar,
@@ -46,6 +49,33 @@ class CRM_Eventlist_Helper {
     $dao = CRM_Core_DAO::executeQuery($sql, $sqlParams);
     $rows = $dao->fetchAll();
     return $rows;
+  }
+
+  private static function getcountParticipantQuery($isCounted) {
+    $pAlias = "p$isCounted";
+    $cAlias = "c$isCounted";
+    $sAlias = "s$isCounted";
+
+    $sql = "
+      select
+        count(*)
+      from
+        civicrm_participant $pAlias
+      inner join
+        civicrm_contact $cAlias on $pAlias.contact_id = $cAlias.id
+      inner join
+        civicrm_participant_status_type $sAlias on $pAlias.status_id = $sAlias.id
+      where
+        $cAlias.is_deleted = 0
+      and
+        $pAlias.event_id = e.id
+      and
+        $sAlias.is_counted = $isCounted
+      and
+        $sAlias.is_active = 1
+    ";
+
+    return $sql;
   }
 
   public static function getNumberOfEvents($filters) {
