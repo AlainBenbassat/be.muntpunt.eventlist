@@ -30,7 +30,7 @@
   </tr>
 
   <tr>
-    <td colspan="5">{include file="CRM/common/formButtons.tpl"} <a href="?reset=1">filters wissen</a></td>
+    <td colspan="5">{include file="CRM/common/formButtons.tpl"} <a href="?reset=1&clearfilters=1">filters wissen</a></td>
   </tr>
 </table>
 
