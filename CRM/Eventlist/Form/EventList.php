@@ -5,6 +5,15 @@ use CRM_Eventlist_ExtensionUtil as E;
 class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
   protected $_pager = NULL;
   public $formFilterNames = [];
+  private $eventListHelper;
+
+  public function __construct($state = NULL, $action = CRM_Core_Action::NONE, $method = 'post', $name = NULL) {
+    $this->eventListHelper = new CRM_Eventlist_Helper();
+
+    Civi::resources()->addStyleFile('be.muntpunt.eventlist', 'css/eventlist.css');
+
+    parent::__construct($state, $action, $method, $name);
+  }
 
   public function buildQuickForm() {
     $this->setTitle('Lijstweergave evenementen');
@@ -16,7 +25,7 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
     $filters = $this->getFilters();
     $this->pager($filters);
     [$offset, $rowCount] = $this->_pager->getOffsetAndRowCount();
-    $rows = CRM_Eventlist_Helper::getEvents($filters, $offset, $rowCount);
+    $rows = $this->eventListHelper->getEvents($filters, $offset, $rowCount);
 
     $this->assign('rows', $rows);
     $this->assign('elementNames', $this->getRenderableElementNames());
@@ -49,25 +58,28 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
       $params['rowCount'] = 10;
     }
 
-    $params['total'] = CRM_Eventlist_Helper::getNumberOfEvents($filters);
+    $params['total'] = $this->eventListHelper->getNumberOfEvents($filters);
 
     $this->_pager = new CRM_Utils_Pager($params);
     $this->assign_by_ref('pager', $this->_pager);
   }
 
   private function addFormFields() {
+    $muntpuntConfig = CRM_Muntpuntconfig_Config::getInstance();
+
     $this->addSelect('event_type_id', ['multiple' => TRUE, 'context' => 'search']);
     $this->formFilterNames[] = 'event_type_id';
 
-    $locationEvents = CRM_Eventlist_Helper::getLocBlocList();
+    $locationEvents = $this->eventListHelper->getLocBlocList();
     $this->add('select', 'loc_block_id', 'Locatie', $locationEvents, FALSE, ['class' => 'crm-select2']);
     $this->formFilterNames[] = 'loc_block_id';
 
-    $mpRooms = [1 => 'Ketje', 2 => 'Ketje2'];
-    $this->add('select', 'event_mp_rooms', 'Muntpunt zalen', $mpRooms, FALSE, ['multiple' => TRUE, 'class' => 'crm-select2']);
+    $list = $muntpuntConfig->getOptionValues_MuntpuntZalen(FALSE);
+    $this->add('select', 'event_mp_rooms', 'Muntpunt zalen', $list, FALSE, ['multiple' => TRUE, 'class' => 'crm-select2']);
     $this->formFilterNames[] = 'event_mp_rooms';
 
-    $this->add('select', 'event_status', 'Status', [], FALSE, ['class' => 'crm-select2']);
+    $list = $muntpuntConfig->getOptionValues_EvenementStatus(TRUE);
+    $this->add('select', 'event_status', 'Status', $list, FALSE, ['class' => 'crm-select2']);
     $this->formFilterNames[] = 'event_status';
 
     $this->add('text', 'event_title_contains', 'Titel bevat');

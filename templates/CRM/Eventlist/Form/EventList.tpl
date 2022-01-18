@@ -75,7 +75,7 @@
           <td><a href="event/search?reset=1&force=1&status=true&event={$row.id}">{$row.geregistreerd}</a></td>
           <td><a href="event/search?reset=1&force=1&status=false&event={$row.id}">{$row.geannuleerd}</a></td>
           <td>{$row.effectief}</td>
-          <td>{$row.maxnum}</td>
+          <td>{$row.maximum}</td>
           <td>{$row.beschikbaar}</td>
           <td>{$row.beheer}</td>
         </tr>
