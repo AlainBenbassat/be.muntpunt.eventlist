@@ -8,10 +8,8 @@ class CRM_Eventlist_Helper {
   }
 
   public function getEvents($filters, $offset, $rowCount) {
-    $eventTypeOptionGroupId = 15;
-    $eventStatusOptionGroupId = $this->muntpuntConfig->getOptionGroupId_EvenementStatus();
-
-    [$whereClause, $sqlParams] = $this->convertToWhereClause($filters);
+    $from = $this->getFrom();
+    [$whereClause, $sqlParams] = $this->convertFiltersToWhereClause($filters);
 
     if ($whereClause) {
       $where = " where $whereClause ";
@@ -39,6 +37,26 @@ class CRM_Eventlist_Helper {
         case when ifnull(e.max_participants, '') = '' then 'Onbeperkt' else e.max_participants end maximum,
         'XXX' beschikbaar,
         'XXX' beheer
+      $from
+      $where
+      order by
+        start_date desc
+      limit
+        $offset, $rowCount
+    ";
+    $dao = CRM_Core_DAO::executeQuery($sql, $sqlParams);
+    $rows = $dao->fetchAll();
+
+    $this->processSpecialFields($rows);
+
+    return $rows;
+  }
+
+  private function getFrom() {
+    $eventTypeOptionGroupId = 15;
+    $eventStatusOptionGroupId = $this->muntpuntConfig->getOptionGroupId_EvenementStatus();
+
+    $from = "
       from
         civicrm_event e
       inner join
@@ -53,18 +71,9 @@ class CRM_Eventlist_Helper {
         civicrm_option_value eei_event_status on eei_event_status.value = eei.activiteit_status and eei_event_status.option_group_id = $eventStatusOptionGroupId
       left outer join
         civicrm_value_evenement_planning ep on ep.entity_id = e.id
-      $where
-      order by
-        start_date desc
-      limit
-        $offset, $rowCount
     ";
-    $dao = CRM_Core_DAO::executeQuery($sql, $sqlParams);
-    $rows = $dao->fetchAll();
 
-    $this->processSpecialFields($rows);
-
-    return $rows;
+    return $from;
   }
 
   private function getcountParticipantQuery($isCounted) {
@@ -95,13 +104,13 @@ class CRM_Eventlist_Helper {
   }
 
   public function getNumberOfEvents($filters) {
-    [$whereClause, $sqlParams] = $this->convertToWhereClause($filters);
+    $from = $this->getFrom();
+    [$whereClause, $sqlParams] = $this->convertFiltersToWhereClause($filters);
 
     $sql = "
       select
         count(*)
-      from
-        civicrm_event e
+      $from
     ";
 
     if ($whereClause) {
@@ -111,7 +120,7 @@ class CRM_Eventlist_Helper {
     return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
   }
 
-  public function convertToWhereClause($values) {
+  public function convertFiltersToWhereClause($values) {
     $sqlWhere = '';
     $sqlParams = [];
     $filters = [];
@@ -140,8 +149,17 @@ class CRM_Eventlist_Helper {
       $filters['loc_block_id'] = ['e.loc_block_id', '=', $values['loc_block_id'], 'Integer'];
     }
 
-    //event_mp_rooms
-    //event_status
+    if (!empty($values['event_mp_rooms'])) {
+      $f = [];
+      foreach ($values['event_mp_rooms'] as $room) {
+        $f[] = "eei.muntpunt_zalen like '%" . CRM_Core_DAO::VALUE_SEPARATOR . $room . CRM_Core_DAO::VALUE_SEPARATOR . "%'";
+      }
+      $filters['event_mp_rooms'] = '(' . implode(' or ', $f) . ')';
+    }
+
+    if (!empty($values['event_status'])) {
+      $filters['event_status'] = ['eei.activiteit_status', '=', $values['event_status'], 'Integer'];
+    }
 
     $i = 1;
     foreach ($filters as $filter) {
@@ -149,14 +167,19 @@ class CRM_Eventlist_Helper {
         $sqlWhere .= ' and ';
       }
 
-      if ($filter[3] == 'CommaSeparatedIntegers') {
-        $sqlWhere .= $filter[0] . ' ' . $filter[1] . "(%$i)";
+      if (is_array($filter)) {
+        if ($filter[3] == 'CommaSeparatedIntegers') {
+          $sqlWhere .= $filter[0] . ' ' . $filter[1] . "(%$i)";
+        }
+        else {
+          $sqlWhere .= $filter[0] . ' ' . $filter[1] . ' %' . $i;
+        }
+
+        $sqlParams[$i] = [$filter[2], $filter[3]];
       }
       else {
-        $sqlWhere .= $filter[0] . ' ' . $filter[1] . ' %' . $i;
+        $sqlWhere .= " $filter ";
       }
-
-      $sqlParams[$i] = [$filter[2], $filter[3]];
 
       $i++;
     }

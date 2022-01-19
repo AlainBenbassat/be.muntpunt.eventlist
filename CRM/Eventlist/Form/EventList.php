@@ -17,12 +17,18 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
 
   public function buildQuickForm() {
     $this->setTitle('Lijstweergave evenementen');
-    $this->clearStoredFiltersIfNeeded();
 
     $this->addFormFields();
     $this->addFormButtons();
 
-    $filters = $this->getFilters();
+    if ($this->isSubmitted()) {
+      $filters = $this->getFiltersFromSubmit();
+    }
+    else {
+      $filters = $this->getFiltersFromSession();
+    }
+
+
     $this->pager($filters);
     [$offset, $rowCount] = $this->_pager->getOffsetAndRowCount();
     $rows = $this->eventListHelper->getEvents($filters, $offset, $rowCount);
@@ -37,15 +43,14 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
   }
 
   public function postProcess() {
-    // the filters are not remembered when we use the pager, so we store them in the session
-    $values = $this->getFilters();
+    $values = $this->getFiltersFromSubmit();
     $this->storeFiltersInSession($values);
 
     parent::postProcess();
   }
 
   public function setDefaultValues() {
-    return $this->getFilters();
+    return $this->getFiltersFromSession();
   }
 
   public function pager($filters) {
@@ -101,33 +106,52 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
     ]);
   }
 
-  private function getFilters() {
+  private function getFiltersFromSession() {
     $filters = [];
 
-    $postedFilters = $this->exportValues();
-    $storedFiltersSerialized = CRM_Core_Session::singleton()->get('event_list_filters');
-
-    if ($storedFiltersSerialized) {
-      $storedFilters = unserialize($storedFiltersSerialized);
+    if ($this->urlContainsClearFilterFlag()) {
+      $this->clearFiltersInSession();
     }
-
-    foreach ($this->formFilterNames as $formFilterName) {
-      // see if a filter was posted, if not see if we have it in the session
-      if (!empty($postedFilters[$formFilterName])) {
-        $filters[$formFilterName] = $postedFilters[$formFilterName];
+    else {
+      $storedFiltersSerialized = CRM_Core_Session::singleton()->get('event_list_filters');
+      if ($storedFiltersSerialized) {
+        $storedFilters = unserialize($storedFiltersSerialized);
       }
-      elseif (!empty($storedFilters[$formFilterName])) {
-        $filters[$formFilterName] = $storedFilters[$formFilterName];
+      foreach ($this->formFilterNames as $formFilterName) {
+        if (!empty($storedFilters[$formFilterName])) {
+          $filters[$formFilterName] = $storedFilters[$formFilterName];
+        }
       }
     }
 
     return $filters;
   }
 
-  private function clearStoredFiltersIfNeeded() {
-    if (CRM_Utils_Request::retrieve('clearfilters', 'Positive') == 1) {
-      CRM_Core_Session::singleton()->set('event_list_filters', '');
+  private function getFiltersFromSubmit() {
+    $filters = [];
+
+    $postedFilters = $this->exportValues();
+
+    foreach ($this->formFilterNames as $formFilterName) {
+      if (!empty($postedFilters[$formFilterName])) {
+        $filters[$formFilterName] = $postedFilters[$formFilterName];
+      }
     }
+
+    return $filters;
+  }
+
+  private function urlContainsClearFilterFlag() {
+    if (CRM_Utils_Request::retrieve('clearfilters', 'Positive') == 1) {
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
+  }
+
+  private function clearFiltersInSession() {
+    CRM_Core_Session::singleton()->set('event_list_filters', '');
   }
 
   private function storeFiltersInSession($values) {
