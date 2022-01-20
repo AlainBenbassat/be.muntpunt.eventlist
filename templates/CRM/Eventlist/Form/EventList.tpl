@@ -61,7 +61,7 @@
       </thead>
       <tbody>
       {foreach from=$rows item=row}
-        <tr id="event_list-{$row.id}" class="crm-entity">
+        <tr id="CustomValue-{$row.ep_id}" class="crm-entity" >
           <td>{$row.status}</td>
           <td><a href="event/manage/settings?reset=1&action=update&id={$row.id}">{$row.titel}</a></td>
           <td>{$row.type}</td>
@@ -71,10 +71,10 @@
           <td>{$row.eind}</td>
           <td>{$row.aanspreekpersoon}</td>
           <td>{$row.organisator}</td>
-          <td>{$row.verwacht}</td>
+          <td class="crm-editable crmf-{$custom_field_verwacht}" data-params='{ldelim}"entity_id":"{$row.id}"{rdelim}'>{$row.verwacht}</td>
           <td><a href="event/search?reset=1&force=1&status=true&event={$row.id}">{$row.geregistreerd}</a></td>
           <td><a href="event/search?reset=1&force=1&status=false&event={$row.id}">{$row.geannuleerd}</a></td>
-          <td>{$row.effectief}</td>
+          <td class="crm-editable crmf-{$custom_field_geschat}" data-params='{ldelim}"entity_id":"{$row.id}"{rdelim}'>{$row.effectief}</td>
           <td>{$row.maximum}</td>
           <td>{$row.beschikbaar}</td>
           <td>{$row.beheer}</td>

@@ -21,6 +21,7 @@ class CRM_Eventlist_Helper {
     $sql = "
       select
         e.id,
+        ep.id ep_id,
         eei_event_status.label status,
         e.title titel,
         ov.label type,

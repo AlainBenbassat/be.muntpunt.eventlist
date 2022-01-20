@@ -35,6 +35,11 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
 
     $this->assign('rows', $rows);
     $this->assign('elementNames', $this->getRenderableElementNames());
+
+    $muntpuntConfig = CRM_Muntpuntconfig_Config::getInstance();
+    $this->assign('custom_field_verwacht', 'custom_' . $muntpuntConfig->getCustomValueId('verwachte_deelnemers'));
+    $this->assign('custom_field_geschat', 'custom_' . $muntpuntConfig->getCustomValueId('geschatte_deelnemers'));
+
     parent::buildQuickForm();
   }
 
