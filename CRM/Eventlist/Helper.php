@@ -31,10 +31,10 @@ class CRM_Eventlist_Helper {
         date_format(start_date, '%d %b, %Y %h:%i') eind,
         ep.aanpreekpersoon_ aanspreekpersoon,
         'XXX' organisator,
-        cast(ep.verwachte_deelnemers AS Int) verwacht,
+        ep.verwachte_deelnemers  verwacht,
         ($countParticipantPositive) geregistreerd,
         ($countParticipantNegative) geannuleerd,
-        cast(ep.geschatte_deelnemers AS Int) effectief,
+        ep.geschatte_deelnemers  effectief,
         case when ifnull(e.max_participants, '') = '' then 'Onbeperkt' else e.max_participants end maximum,
         'XXX' beschikbaar,
         'XXX' beheer
