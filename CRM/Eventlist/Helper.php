@@ -30,7 +30,7 @@ class CRM_Eventlist_Helper {
         date_format(start_date, '%d %b, %Y %h:%i') begindatum,
         date_format(start_date, '%d %b, %Y %h:%i') eind,
         ep.aanpreekpersoon_ aanspreekpersoon,
-        'XXX' organisator,
+        c_org.display_name organisator,
         ep.verwachte_deelnemers  verwacht,
         ($countParticipantPositive) geregistreerd,
         ($countParticipantNegative) geannuleerd,
@@ -72,6 +72,8 @@ class CRM_Eventlist_Helper {
         civicrm_option_value eei_event_status on eei_event_status.value = eei.activiteit_status and eei_event_status.option_group_id = $eventStatusOptionGroupId
       left outer join
         civicrm_value_evenement_planning ep on ep.entity_id = e.id
+      left outer join
+        civicrm_contact c_org on c_org.id = eei.organisator
     ";
 
     return $from;
