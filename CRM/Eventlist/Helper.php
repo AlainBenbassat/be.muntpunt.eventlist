@@ -29,7 +29,7 @@ class CRM_Eventlist_Helper {
         eei.muntpunt_zalen muntpunt_zalen,
         date_format(start_date, '%d %b, %Y %h:%i') begindatum,
         date_format(start_date, '%d %b, %Y %h:%i') eind,
-        ep.aanpreekpersoon_ aanspreekpersoon,
+        c_aanspr.display_name aanspreekpersoon,
         c_org.display_name organisator,
         ep.verwachte_deelnemers  verwacht,
         ($countParticipantPositive) geregistreerd,
@@ -74,6 +74,8 @@ class CRM_Eventlist_Helper {
         civicrm_value_evenement_planning ep on ep.entity_id = e.id
       left outer join
         civicrm_contact c_org on c_org.id = eei.organisator
+      left outer join
+        civicrm_contact c_aanspr on c_aanspr.id = ep.aanpreekpersoon_
     ";
 
     return $from;
