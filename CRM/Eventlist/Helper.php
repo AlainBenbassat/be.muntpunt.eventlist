@@ -25,7 +25,7 @@ class CRM_Eventlist_Helper {
         eei_event_status.label status,
         e.title titel,
         ov.label type,
-        a.name locatie,
+        ifnull(a.name, concat(a.street_address, ' :: ', a.city)) locatie,
         eei.muntpunt_zalen muntpunt_zalen,
         date_format(start_date, '%d %b, %Y %h:%i') begindatum,
         date_format(start_date, '%d %b, %Y %h:%i') eind,
