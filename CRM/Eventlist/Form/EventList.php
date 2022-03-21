@@ -129,6 +129,8 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
       }
     }
 
+    $this->checkAtLeastOneDateFilter($filters);
+
     return $filters;
   }
 
@@ -143,7 +145,15 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
       }
     }
 
+    $this->checkAtLeastOneDateFilter($filters);
+
     return $filters;
+  }
+
+  private function checkAtLeastOneDateFilter(&$filters) {
+    if (empty($filters['event_start_date_from']) && empty($filters['event_start_date_from'])) {
+      $filters['event_start_date_from'] = date('Y-m-d') . ' 00:00';
+    }
   }
 
   private function urlContainsClearFilterFlag() {

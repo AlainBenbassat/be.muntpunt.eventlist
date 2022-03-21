@@ -41,7 +41,7 @@ class CRM_Eventlist_Helper {
       $from
       $where
       order by
-        start_date desc
+        start_date
       limit
         $offset, $rowCount
     ";
