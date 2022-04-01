@@ -67,15 +67,15 @@ class CRM_Eventlist_Helper {
       left outer join
         civicrm_address a on a.id = lb.address_id
       left outer join
-        civicrm_value_evenement_extra_info eei on eei.entity_id = e.id
+        civicrm_value_extra_evenement_info eei on eei.entity_id = e.id
       left outer join
         civicrm_option_value eei_event_status on eei_event_status.value = eei.activiteit_status and eei_event_status.option_group_id = $eventStatusOptionGroupId
       left outer join
-        civicrm_value_evenement_planning ep on ep.entity_id = e.id
+        civicrm_value_evenement_planning_memo_overleg_en_statistiek ep on ep.entity_id = e.id
       left outer join
         civicrm_contact c_org on c_org.id = eei.organisator
       left outer join
-        civicrm_contact c_aanspr on c_aanspr.id = ep.aanpreekpersoon_
+        civicrm_contact c_aanspr on c_aanspr.id = ep.aanpreekpersoon
     ";
 
     return $from;
