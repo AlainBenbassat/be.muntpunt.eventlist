@@ -261,12 +261,12 @@ class CRM_Eventlist_Helper {
 
   private function getAdminLinks($eventId) {
     $actionLinks = '<div class="muntpunt-events-actions">';
-    $actionLinks .= '<span class="muntpunt-events-list-edit"><a href="civicrm/event/manage/settings?reset=1&amp;action=update&amp;id=' . $eventId . '" target="_blank" title="Bewerken"><i class="fa fa-edit"></i></a></span>';
-    $actionLinks .= '<span class="muntpunt-events-list-add-participant"><a href="civicrm/participant/add?reset=1&amp;action=add&amp;context=standalone&amp;eid=' . $eventId . '" target="_blank" title="Deelnemer inschrijven"><i class="fa fa-plus-circle"></i></a></span>';
-    $actionLinks .= '<span class="muntpunt-events-list-info"><a href="civicrm/event/info?reset=1&amp;id=' . $eventId . '" target="_blank" title="Informatiepagina"><i class="fa fa-search"></i></a></span>';
-    $actionLinks .= '<span class="muntpunt-events-list-entry"><a href="civicrm/event/register?reset=1&amp;id=' . $eventId . '" target="_blank" title="Inschrijvingspagina"><i class="fa fa-file"></i></a></span>';
-    $actionLinks .= '<span class="muntpunt-events-list-delete"><a href="civicrm/event/manage?reset=1&amp;action=delete&amp;id=' . $eventId . '" target="_blank" title="Verwijderen"><i class="fa fa-trash"></i></a></span>';
-    $actionLinks .= '<span class="muntpunt-events-list-copy"><a href="civicrm/event/manage?reset=1&amp;action=copy&amp;id=' . $eventId . '" target="_blank" title="Kopiëren"><i class="fa fa-copy"></i></a></span>';
+    $actionLinks .= '<span class="muntpunt-events-list-edit"><a href="event/manage/settings?reset=1&amp;action=update&amp;id=' . $eventId . '" target="_blank" title="Bewerken"><i class="fa fa-edit"></i></a></span>';
+    $actionLinks .= '<span class="muntpunt-events-list-add-participant"><a href="participant/add?reset=1&amp;action=add&amp;context=standalone&amp;eid=' . $eventId . '" target="_blank" title="Deelnemer inschrijven"><i class="fa fa-plus-circle"></i></a></span>';
+    $actionLinks .= '<span class="muntpunt-events-list-info"><a href="event/info?reset=1&amp;id=' . $eventId . '" target="_blank" title="Informatiepagina"><i class="fa fa-search"></i></a></span>';
+    $actionLinks .= '<span class="muntpunt-events-list-entry"><a href="event/register?reset=1&amp;id=' . $eventId . '" target="_blank" title="Inschrijvingspagina"><i class="fa fa-file"></i></a></span>';
+    $actionLinks .= '<span class="muntpunt-events-list-delete"><a href="event/manage?reset=1&amp;action=delete&amp;id=' . $eventId . '" target="_blank" title="Verwijderen"><i class="fa fa-trash"></i></a></span>';
+    $actionLinks .= '<span class="muntpunt-events-list-copy"><a href="event/manage?reset=1&amp;action=copy&amp;id=' . $eventId . '" target="_blank" title="Kopiëren"><i class="fa fa-copy"></i></a></span>';
     $actionLinks .= '</div>';
 
     return $actionLinks;
