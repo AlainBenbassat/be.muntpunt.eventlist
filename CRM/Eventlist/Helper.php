@@ -166,6 +166,12 @@ class CRM_Eventlist_Helper {
       $filters['event_status'] = ['eei.activiteit_status', '=', $values['event_status'], 'Integer'];
     }
 
+    if (array_key_exists('event_online_registration', $values)) {
+      if ($values['event_online_registration'] === '0' ||  $values['event_online_registration'] === '1') {
+        $filters['event_online_registration'] = ['e.is_online_registration', '=', (int)$values['event_online_registration'], 'Integer'];
+      }
+    }
+
     $i = 1;
     foreach ($filters as $filter) {
       if (strlen($sqlWhere) > 0) {

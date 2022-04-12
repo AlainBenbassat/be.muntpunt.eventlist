@@ -28,7 +28,6 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
       $filters = $this->getFiltersFromSession();
     }
 
-
     $this->pager($filters);
     [$offset, $rowCount] = $this->_pager->getOffsetAndRowCount();
     $rows = $this->eventListHelper->getEvents($filters, $offset, $rowCount);
@@ -92,6 +91,9 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
     $this->add('select', 'event_status', 'Status', $list, FALSE, ['class' => 'crm-select2']);
     $this->formFilterNames[] = 'event_status';
 
+    $this->addYesNo('event_online_registration', 'Online registratie?', TRUE);
+    $this->formFilterNames[] = 'event_online_registration';
+
     $this->add('text', 'event_title_contains', 'Titel bevat');
     $this->formFilterNames[] = 'event_title_contains';
 
@@ -123,7 +125,7 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
         $storedFilters = unserialize($storedFiltersSerialized);
       }
       foreach ($this->formFilterNames as $formFilterName) {
-        if (!empty($storedFilters[$formFilterName])) {
+        if (array_key_exists($formFilterName, $storedFilters)) {
           $filters[$formFilterName] = $storedFilters[$formFilterName];
         }
       }
@@ -140,7 +142,7 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
     $postedFilters = $this->exportValues();
 
     foreach ($this->formFilterNames as $formFilterName) {
-      if (!empty($postedFilters[$formFilterName])) {
+      if (array_key_exists($formFilterName, $postedFilters)) {
         $filters[$formFilterName] = $postedFilters[$formFilterName];
       }
     }
@@ -173,7 +175,7 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
     $filtersToStore = [];
 
     foreach ($this->formFilterNames as $formFilterName) {
-      if (!empty($values[$formFilterName])) {
+      if (array_key_exists($formFilterName, $values)) {
         $filtersToStore[$formFilterName] = $values[$formFilterName];
       }
     }

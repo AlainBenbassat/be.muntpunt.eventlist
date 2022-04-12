@@ -20,10 +20,14 @@
         {$form.event_mp_rooms.label}<br>
         {$form.event_mp_rooms.html}
     </td>
+    <td>
+        {$form.event_online_registration.label}<br>
+        {$form.event_online_registration.html}
+    </td>
   </tr>
 
   <tr>
-    <td colspan="5">
+    <td colspan="6">
       {$form.event_start_date_from.label}<br>
       van {$form.event_start_date_from.html} tot en met {$form.event_start_date_to.html}
     </td>
