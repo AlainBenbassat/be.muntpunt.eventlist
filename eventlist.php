@@ -6,7 +6,6 @@ use CRM_Eventlist_ExtensionUtil as E;
 // phpcs:enable
 
 function eventlist_civicrm_postProcess($formName, &$form) {
-  //var_dump($formName);
   if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo') {
     $session = CRM_Core_Session::singleton();
     $url = CRM_Utils_System::url('civicrm/eventlist');
