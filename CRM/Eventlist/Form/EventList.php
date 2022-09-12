@@ -123,10 +123,11 @@ class CRM_Eventlist_Form_EventList extends CRM_Core_Form {
       $storedFiltersSerialized = CRM_Core_Session::singleton()->get('event_list_filters');
       if ($storedFiltersSerialized) {
         $storedFilters = unserialize($storedFiltersSerialized);
-      }
-      foreach ($this->formFilterNames as $formFilterName) {
-        if (array_key_exists($formFilterName, $storedFilters)) {
-          $filters[$formFilterName] = $storedFilters[$formFilterName];
+
+        foreach ($this->formFilterNames as $formFilterName) {
+          if (array_key_exists($formFilterName, $storedFilters)) {
+            $filters[$formFilterName] = $storedFilters[$formFilterName];
+          }
         }
       }
     }

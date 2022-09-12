@@ -6,11 +6,33 @@ use CRM_Eventlist_ExtensionUtil as E;
 // phpcs:enable
 
 function eventlist_civicrm_postProcess($formName, &$form) {
-  if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo') {
-    $session = CRM_Core_Session::singleton();
-    $url = CRM_Utils_System::url('civicrm/eventlist');
-    $session->replaceUserContext($url);
+  if (eventlist_userHasSavedEvent($formName) || eventlist_userHasDeletedEvent($formName)) {
+    eventlist_redirectUserToEventList();
   }
+}
+
+function eventlist_userHasSavedEvent($formName) {
+  if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo') {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
+
+function eventlist_userHasDeletedEvent($formName) {
+  if ($formName == 'CRM_Event_Form_ManageEvent_Delete') {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
+
+function eventlist_redirectUserToEventList() {
+  $session = CRM_Core_Session::singleton();
+  $url = CRM_Utils_System::url('civicrm/eventlist');
+  $session->replaceUserContext($url);
 }
 
 /**

@@ -139,7 +139,7 @@ class CRM_Eventlist_Helper {
     }
 
     if (!empty($values['loc_block_id'])) {
-      $filters['loc_block_id'] = ['e.loc_block_id', '=', $values['loc_block_id'], 'Integer'];
+      $filters['loc_block_id'] = ['lb.address_id', '=', $values['loc_block_id'], 'Integer'];
     }
 
     if (!empty($values['event_start_date_from'])) {
@@ -148,10 +148,6 @@ class CRM_Eventlist_Helper {
 
     if (!empty($values['event_start_date_to'])) {
       $filters['event_start_date_to'] = ['e.start_date', '<=', $values['event_start_date_to'] . ' 23:59', 'String'];
-    }
-
-    if (!empty($values['loc_block_id'])) {
-      $filters['loc_block_id'] = ['e.loc_block_id', '=', $values['loc_block_id'], 'Integer'];
     }
 
     if (!empty($values['event_mp_rooms'])) {
@@ -213,7 +209,7 @@ class CRM_Eventlist_Helper {
       inner join
         civicrm_address a on lb.address_id = a.id
       group by
-        a.name, a.street_address, a.name
+        a.name, a.street_address
       order by
         a.name
     ";
