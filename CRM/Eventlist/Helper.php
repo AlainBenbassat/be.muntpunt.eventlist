@@ -98,6 +98,8 @@ class CRM_Eventlist_Helper {
       where
         $cAlias.is_deleted = 0
       and
+        $cAlias.contact_type = 'Individual'
+      and
         $pAlias.event_id = e.id
       and
         $sAlias.is_counted = $isCounted
